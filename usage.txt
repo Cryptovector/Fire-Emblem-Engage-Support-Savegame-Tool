@@ -1,0 +1,70 @@
+Where can i find my Fire Emblem Engage Savegames ?
+
+Yuzu: %Appdata%\yuzu\nand\user\save\0000000000000000\C65ACDC34E680A4C5BF7E30BCDD9EEC8\0100A6301214E000 (This is an Example Savepath) for more info see: https://yuzu-emu.org/wiki/user-directory/
+
+If you have a Switch with installed Costum Firmware you can Backup and Restore your Savegames with JKSV (https://github.com/J-D-K/JKSV) or Similar Software.
+
+The Savefolder should look like this:
+
+++++++++++++++++++++++++++++++++++++
+Auto
+Global
+Manual0
+Manual1
+Manual2
+Manual3
+Manual4
+Manual5
+Manual6
+Manual7
+Manual8
+Manual9
+++++++++++++++++++++++++++++++++++++
+
+Manual0 = Slot 1, Manual1 = Slot 2, Manual2 = Slot 3 and so forth
+
+
+Usage Examples:
+
+Set Support Value of Framme (フラン) and Goldmary (ゴルドマリー) [-SA 1] to 47 [-SDL] (Japanese Names for Support are Seperated by "|" English names by ":")
+python "Change_Support_Level.py" -i "Manual2" -o "Manual2.Patch" -p フラン|ゴルドマリー -SDL 47 -SA 1
+Altv
+python "Change_Support_Level.py" -i "Manual2" -o "Manual2.Patch" -p Framme:Goldmary -SDL 47 -SA 1
+
+[-HS] Set Support Values to 124+Support Level (You can get all Support Dialoges but risk a integer Overflow if you try to build up any more Support before Completing all Dialoge)
+[-SA 2] Change all Support Levels to given Value
+[-SL 0] Set Support Levels to 0: "No Support" (1:C, 2:B, 3:A)
+python "Change_Support_Level.py" -i "Manual3" -o "Manual3.Patch" -HS -SA 2 -SL 0
+
+Change support Value of all Paarings to 100 [-SDL]
+python "Change_Support_Level.py" -i "Manual4" -o "Manual4.Patch" -SDL 100
+
+
+Explanation:
+
+Characters have 2 Distinct Support Bytes:
+
+1.) Support Level: C, B, A (0-3)
+2.) Support Value: 0-127
+
+Every Support Pair is Index by a PID name: z.b "PID_フランPID_ゴルドマリー" (PID_FrammePID_Goldmary) You can lookup the Support Paarings IDs by Looking into "Sorted_Support_Paarings.txt".
+The Support Level is a Byte from 0-3: (No Support, C, B, A) which Support Dialoge is unlocked is decided by the Support Value. If a specific threshold is reached a new Support Dialoge is available. If the value is high enough, several support dialogs can be conducted in succession.
+If the Support Level is set by script dialoges will be Skipt if the Support Value is too low and vice versa. The Support Value is a Signed 8-bit Integer with a range of -128 to 127. if you set the Support Dialoge to 128 (as Signed integer -1) it is too low for any Support Dialoge. 
+The Game will add to the Support Value if you reach a new Support Level (+1) or by other actions such as dining together, adjacent allies fighting together etc. If the Support Value is to high it will Overflow (https://en.wikipedia.org/wiki/Integer_overflow) so keep that is mind.   
+
+You can lookup the Japanese Character Names in the Fire Emblem wiki:
+
+https://fireemblem.fandom.com/wiki/List_of_characters_in_Fire_Emblem_Engage
+
+Parameter:
+
+'-SA', '--Support_Action'         : "Action for Support Patching 0: No changes 1: Use only offered Support Pair 2: Change Support Level to given Value for all Support Pairs", default=0
+'-i', '--Input_Filepath'          : "Path for Input Savegame"
+'-o', '--Output_Filepath'         : "Path for Output (Patched) Savegame"
+'-p', '--Support_Pair'            : "Support Pair if --Support_Action 1 is used"
+'-SL', '--Support_level'          : "Changes Support Level without Dialoge, if --Support_Action 2 is used", default=3
+'-SDL', '--Support_Dialoge_value' : "Changes Support Dialoge Value to Number given", default="ND" (No Dialoge Changes) -SDL "HD" (Highest Dialoge) is like -HS
+'-HS','--Highest_Support_Dialoge' : "Highest Support Dialoge for Selected Supports" like -SDL "HD"
+
+
+
